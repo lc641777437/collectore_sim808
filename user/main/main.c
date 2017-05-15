@@ -7,35 +7,27 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <eat_modem.h>
-#include <eat_interface.h>
-#include <eat_uart.h>
-#include <eat_timer.h>
-#include <eat_socket.h>
-#include <eat_clib_define.h> //only in main.c
-#include <eat_gps.h>
 
+#include <eat_gps.h>
+#include <eat_interface.h>
+#include <eat_clib_define.h> //only in main.c
+
+#include "log.h"
 #include "event.h"
-#include "watchdog.h"
 #include "timer.h"
 #include "setting.h"
-#include "log.h"
 #include "version.h"
+#include "watchdog.h"
 
 /********************************************************************
  * Macros
  ********************************************************************/
-#define EAT_UART_RX_BUF_LEN_MAX 2048
-#define EAT_MEM_MAX_SIZE 300*1024
+#define EAT_MEM_MAX_SIZE (200 * 1024) //200K
 
 /********************************************************************
  * Types
  ********************************************************************/
 typedef void (*app_user_func)(void*);
-
-/********************************************************************
- * Extern Variables (Extern /Global)
- ********************************************************************/
 
 /********************************************************************
  * Local Variables:  STATIC
@@ -82,15 +74,13 @@ APP_ENTRY_FLAG
 	};
 #pragma arm section rodata
 
+/* This function can be called before Task running ,configure the GPIO,uart and etc.
+   Only these api can be used:
+     eat_uart_set_debug: set debug port
+     eat_pin_set_mode: set GPIO mode
+     eat_uart_set_at_port: set AT port */
 void app_func_ext1(void *data)
 {
-	/*This function can be called before Task running ,configure the GPIO,uart and etc.
-	   Only these api can be used:
-		 eat_uart_set_debug: set debug port
-		 eat_pin_set_mode: set GPIO mode
-		 eat_uart_set_at_port: set AT port
-	*/
-
     EatUartConfig_st cfg =
     {
         EAT_UART_BAUD_115200,
@@ -106,19 +96,18 @@ void app_func_ext1(void *data)
 
 void app_main(void *data)
 {
-    EatEvent_st event;
     eat_bool rc;
+    EatEvent_st event;
 
     APP_InitRegions();//Init app RAM
     APP_init_clib(); //C library initialize, second step
 
-    LOG_INFO("booting: version:%s, build_time=%s %s. core(version:%s, buildno=%s, buildtime=%s)",
-            VERSION_STR, __DATE__, __TIME__, eat_get_version(), eat_get_buildno(), eat_get_buildtime());
+    LOG_INFO("main thread start.");
 
     rc = eat_mem_init(s_memPool, EAT_MEM_MAX_SIZE);
     if (!rc)
     {
-    	LOG_ERROR("eat memory initial error:%d!", rc);
+    	LOG_ERROR("eat memory initial error");
         return;
     }
 

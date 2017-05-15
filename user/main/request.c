@@ -6,20 +6,17 @@
  */
 #include <string.h>
 
-#include <eat_type.h>
-#include <eat_gps.h>
-#include <eat_other.h>
-#include <eat_periphery.h>
+#include <eat_interface.h>
 
-#include "request.h"
-#include "protocol.h"
 #include "rtc.h"
-#include "utils.h"
 #include "log.h"
-#include "socket.h"
-#include "setting.h"
 #include "msg.h"
+#include "utils.h"
+#include "socket.h"
+#include "request.h"
+#include "setting.h"
 #include "version.h"
+#include "protocol.h"
 
 int cmd_Login(void)
 {
@@ -57,10 +54,9 @@ void cmd_Heartbeat(void)
 
 void cmd_sendInfo(const unsigned char info[148])
 {
-    float latitude = 0.0;
-    float longitude = 0.0;
-    MSG_COLLECTOR_INFO *msg;
-    u8 imei[MAX_IMEI_LENGTH] = {0};
+    MSG_COLLECTOR_INFO *msg = NULL;
+    u8 imei[MAX_IMEI_LENGTH + 1] = {0};
+    GPS *gps = setting_getGps();
 
     msg = (MSG_COLLECTOR_INFO *)alloc_msg(CMD_INFO, sizeof(MSG_COLLECTOR_INFO));
     if(!msg)
@@ -69,19 +65,20 @@ void cmd_sendInfo(const unsigned char info[148])
         return;
     }
 
+    msg->isGps = gps->isGPS;
     eat_get_imei(imei, MAX_IMEI_LENGTH);
     memcpy(msg->imei, imei, MAX_IMEI_LENGTH);
     msg->timestamp = htonl(rtc_getTimestamp());
-    msg->isGps = gps.isGPS;
-    if(gps.isGPS)
+
+    if(gps->isGPS)
     {
-        msg->latitude = gps.latitude;
-        msg->longitude = gps.longitude;
+        msg->latitude = gps->latitude;
+        msg->longitude = gps->longitude;
     }
     else
     {
-        msg->latitude = 0;
-        msg->longitude = 0;
+        msg->latitude = 0.0;
+        msg->longitude = 0.0;
     }
     memcpy(msg->info, info, 148);
     socket_sendDataDirectly(msg, sizeof(MSG_COLLECTOR_INFO));

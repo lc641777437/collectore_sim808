@@ -7,21 +7,20 @@
 #include <string.h>
 
 #include <eat_interface.h>
-#include <eat_uart.h>
 #include <eat_gps.h>
 
-#include "timer.h"
 #include "log.h"
-#include "uart.h"
-#include "socket.h"
-#include "setting.h"
 #include "msg.h"
-#include "client.h"
 #include "fsm.h"
-#include "request.h"
 #include "mem.h"
+#include "uart.h"
 #include "modem.h"
 #include "utils.h"
+#include "timer.h"
+#include "client.h"
+#include "socket.h"
+#include "setting.h"
+#include "request.h"
 
 typedef int (*EVENT_FUNC)(const EatEvent_st* event);
 typedef struct
@@ -30,23 +29,18 @@ typedef struct
 	EVENT_FUNC pfn;
 }EVENT_PROC;
 
-
 #define DESC_DEF(x) case x:\
                             return #x
-void event_gps_proc(void)
+static void event_gps_proc(void)
 {
-    unsigned char buf[1024] = {0};
-    unsigned char* buf_gps = NULL;
     int rc;
+    GPS gps = {EAT_FALSE, 0, 0.0, 0.0};
+    unsigned char* buf_gps = NULL;
+    unsigned char buf[MAX_READ_LEN] = {0};
 
-    eat_bool iGpsFixed = EAT_FALSE;
-    double iGpstime = 0.0;
     int satellite = 0;
-    float latitude = 0.0;
-    float longitude = 0.0;
-    float altitude = 0.0;
-    float speed = 0.0;
-    float course = 0.0;
+    double iGpstime = 0.0;
+    float latitude = 0.0, longitude = 0.0, altitude = 0.0, speed = 0.0, course = 0.0;
 
     /*
      * the output format of eat_gps_nmea_info_output
@@ -56,37 +50,31 @@ void event_gps_proc(void)
             <num> :satellites in view for fix
      * example:$GPSIM,114.5,30.15,28.5,1461235600.123,3355,7,2.16,179.36
      */
-
-    rc = eat_gps_nmea_info_output(EAT_NMEA_OUTPUT_SIMCOM,buf,1024);
+    rc = eat_gps_nmea_info_output(EAT_NMEA_OUTPUT_SIMCOM, (char *)buf, MAX_READ_LEN);
     if(rc == EAT_FALSE)
     {
-        LOG_ERROR("get gps error ,and erturn is %d",rc);
+        LOG_ERROR("get gps error, result is %d", rc);
     }
 
-    LOG_DEBUG("%s",buf);
+    LOG_DEBUG("%s", buf);
 
-    buf_gps = string_bypass(buf, "$GPSIM,");
+    buf_gps = (u8 *)string_bypass((const char *)buf, "$GPSIM,");
 
-    rc = sscanf(buf_gps,"%f,%f,%f,%lf,%*d,%d,%f,%f",\
-        &latitude,&longitude,&altitude,&iGpstime,&satellite,&speed,&course);
-
-    if(isTimeFixed((long long)iGpstime))
-    {
-        setting.main_gps_timer_period = 24 * 60 * 60 *1000;
-        print("%f",iGpstime);
-    }
+    rc = sscanf((const char *)buf_gps, "%f,%f,%f,%lf,%*d,%d,%f,%f",
+        &latitude, &longitude, &altitude, &iGpstime, &satellite, &speed, &course);
 
     if(!rtc_synced())
     {
         rtc_update((long long)iGpstime);
     }
 
-    if(longitude > 0 && latitude > 0)//get GPS
+    if(longitude > 0 && latitude > 0 && rc == 7)//get GPS
     {
         gps.isGPS = EAT_TRUE;
         gps.timestamp = rtc_getTimestamp();
         gps.latitude = latitude;
         gps.longitude = longitude;
+        setting_saveGps(gps);
     }
     else
     {
@@ -117,40 +105,22 @@ static int event_timer(const EatEvent_st* event)
     return 0;
 }
 
-static int event_adc(const EatEvent_st* event)
-{
-    unsigned int value = event->data.adc.v;
-
-    LOG_DEBUG("ad value=%d", value);
-
-    if (event->data.adc.pin == 0)
-    {
-        return 0;
-    }
-    else
-    {
-        LOG_INFO("not processed adc pin:%d", event->data.adc.pin);
-    }
-
-    return 0;
-}
-
 static int event_mod_ready_rd(const EatEvent_st* event)
 {
-	u8 buf[256] = {0};
 	u16 len = 0;
+	u8 buf[MAX_READ_LEN] = {0};
 
-	len = eat_modem_read(buf, 256);
+	len = eat_modem_read(buf, MAX_READ_LEN);
 	if (!len)
 	{
 	    LOG_ERROR("modem received nothing.");
 	    return -1;
 	}
+
     LOG_DEBUG("modem recv: %s", buf);
 
-    if (modem_IsCallReady(buf))
+    if (modem_IsCallReady((char *)buf))
     {
-
         fsm_run(EVT_CALL_READY);
     }
 
@@ -166,14 +136,13 @@ static EVENT_PROC eventProcs[] =
     {EAT_EVENT_UART_READY_WR,       event_uart_ready_wr},
     {EAT_EVENT_UART_SEND_COMPLETE,  EAT_NULL},
     {EAT_EVENT_USER_MSG,            EAT_NULL},
-    {EAT_EVENT_ADC,                 event_adc},
+    {EAT_EVENT_ADC,                 EAT_NULL},
 };
 
 
 int event_proc(EatEvent_st* event)
 {
     int i = 0;
-
 
     for (i = 0; i < sizeof(eventProcs) / sizeof(eventProcs[0]); i++)
     {
@@ -184,11 +153,9 @@ int event_proc(EatEvent_st* event)
             {
                 return pfn(event);
             }
-            else
-            {
-                LOG_ERROR("event(%s) not processed!", event->event);
-                return -1;
-            }
+
+            LOG_ERROR("event(%s) not processed!", event->event);
+            break;
         }
     }
     return -1;

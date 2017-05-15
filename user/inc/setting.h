@@ -8,11 +8,11 @@
 #ifndef USER_ELECTROMBILE_SETTING_H_
 #define USER_ELECTROMBILE_SETTING_H_
 
-#include <eat_type.h>
+#include <eat_interface.h>
 
-#define SETTINGFILE_NAME L"C:\\set.conf"
+#define SETTINGFILE_NAME L"C:\\setting.conf"
 
-#define MAX_DOMAIN_NAME_LEN 32
+#define MAX_DOMAIN_NAME_LEN (32)
 
 typedef enum
 {
@@ -23,22 +23,18 @@ typedef enum
 #pragma anon_unions
 typedef struct
 {
-	//Server configuration
-	ADDR_TYPE addr_type;
-	union
-	{
-		char domain[MAX_DOMAIN_NAME_LEN];
-		u8 ipaddr[4];
-	};
+	/* Server configuration */
 	u16 port;
+	ADDR_TYPE addr_type;
+    u8 ipaddr[4];
+    char domain[MAX_DOMAIN_NAME_LEN];
 
-	//Timer configuration
+	/* Timer configuration */
     struct
     {
         u32 main_loop_timer_period;
         u32 main_gps_timer_period;
     };
-
 }SETTING;
 
 typedef struct
@@ -49,11 +45,12 @@ typedef struct
     float latitude;
 }GPS;
 
-
 extern SETTING setting;
-extern GPS gps;
 
 eat_bool setting_restore(void);
 eat_bool setting_save(void);
+
+void setting_saveGps(GPS gps);
+GPS *setting_getGps(void);
 
 #endif /* USER_ELECTROMBILE_SETTING_H_ */

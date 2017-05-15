@@ -13,5 +13,4 @@
 #define malloc eat_mem_alloc
 #define free eat_mem_free
 
-
 #endif /* USER_INC_MEM_H_ */

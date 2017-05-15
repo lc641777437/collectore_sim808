@@ -4,42 +4,20 @@
  *  Created on: 2016/7/26
  *      Author: lc
  */
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
-#include <eat_fs_type.h>
-#include <eat_fs.h>
-#include <eat_fs_errcode.h>
-#include <eat_modem.h>
 #include <eat_interface.h>
-#include <eat_uart.h>
 
-#include "setting.h"
-#include "version.h"
+#include "mem.h"
 #include "log.h"
 #include "cJSON.h"
-#include "mem.h"
 #include "utils.h"
+#include "setting.h"
+#include "version.h"
 
-typedef struct
-{
-    //Server configuration
-    ADDR_TYPE addr_type;
-    union
-    {
-        char domain[MAX_DOMAIN_NAME_LEN];
-        u8 ipaddr[4];
-    }addr;
-    u16 port;
-
-    //Timer configuration
-    u32 gps_send_timer_period;
-
-}STORAGE;
-
-
+static GPS position;
 SETTING setting;
-GPS gps;
 
 //for debug command
 #define CMD_STRING_SERVER   "server"
@@ -84,12 +62,12 @@ static void setting_initial(void)
 
 eat_bool setting_restore(void)
 {
-    FS_HANDLE fh;
     int rc;
-    UINT filesize = 0;
+    FS_HANDLE fh;
     char *buf = 0;
     cJSON *conf = 0;
     cJSON *addr = 0;
+    UINT filesize = 0;
 
     setting_initial();
 
@@ -160,7 +138,7 @@ eat_bool setting_restore(void)
         cJSON_Delete(conf);
         return EAT_FALSE;
     }
-    setting.addr_type = cJSON_GetObjectItem(addr, TAG_ADDR_TYPE)->valueint;
+    setting.addr_type = cJSON_GetObjectItem(addr, TAG_ADDR_TYPE)->valueint?ADDR_TYPE_DOMAIN:ADDR_TYPE_IP;
     if (setting.addr_type == ADDR_TYPE_DOMAIN)
     {
         char *domain = cJSON_GetObjectItem(addr, TAG_ADDR)->valuestring;
@@ -255,8 +233,14 @@ eat_bool setting_save(void)
     return ret;
 }
 
+void setting_saveGps(GPS gps)
+{
+    position = gps;
+}
 
-
-
+GPS *setting_getGps(void)
+{
+    return &position;
+}
 
 

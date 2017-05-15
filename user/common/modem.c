@@ -32,7 +32,7 @@
 
 eat_bool modem_cmd(const unsigned char *cmd)
 {
-    unsigned short len = strlen(cmd);
+    unsigned short len = strlen((const char *)cmd);
     unsigned short rc = eat_modem_write(cmd, len);
 
     if(rc != len)
@@ -77,7 +77,7 @@ eat_bool modem_GPRSAttach(void)
 
     if (rc == EAT_REG_STATE_REGISTERED)
     {
-        return eat_network_get_cgatt();
+        return eat_network_get_cgatt()?EAT_TRUE:EAT_FALSE;
     }
     else
     {
@@ -112,7 +112,7 @@ eat_bool modem_switchEngineeringMode(int mode, int Ncell)
 {
     unsigned char cmd[32] = {0};
 
-    snprintf(cmd, 32, "%s%s%d,%d\r", AT_CENG, MODEM_WRITE_CMD, mode, Ncell);
+    snprintf((char *)cmd, 32, "%s%s%d,%d\r", AT_CENG, MODEM_WRITE_CMD, mode, Ncell);
 
     return modem_cmd(cmd);
 }

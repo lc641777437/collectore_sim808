@@ -13,12 +13,8 @@
 #include <eat_interface.h>
 
 eat_bool rtc_synced(void);
-
-void rtc_setSyncFlag(eat_bool isRtcSync);
-
-void rtc_update(long long time);
-
 time_t rtc_getTimestamp(void);
-
+void rtc_update(long long time);
+void rtc_setSyncFlag(eat_bool isRtcSync);
 
 #endif /* USER_ELECTROMBILE_RTC_H_ */
