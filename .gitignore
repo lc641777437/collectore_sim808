@@ -42,3 +42,15 @@ output/
 lnkfeedback.txt
 core/SIM808M32_EMBEDDEDAT/SIM808M32_EAT.cfg
 core/SIM808M32_EMBEDDEDAT/app
+
+#sourse insight
+*.IAB
+*.IAD
+*.IMB
+*.IMD
+*.PFI
+*.PO
+*.PR
+*.PRI
+*.PS
+*.WK3
