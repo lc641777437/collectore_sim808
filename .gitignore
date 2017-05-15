@@ -1,0 +1,44 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+
+# eclipse project file
+.cproject
+.project
+.idea
+CMakeLists.txt
+
+# output files
+output/
+lnkfeedback.txt
+core/SIM808M32_EMBEDDEDAT/SIM808M32_EAT.cfg
+core/SIM808M32_EMBEDDEDAT/app
