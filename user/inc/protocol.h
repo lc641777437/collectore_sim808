@@ -14,14 +14,16 @@
 
 #define MAX_SET_LEN (64)
 #define AD_DATA_LEN (148)
+#define AD_DATADYNAMIC_LEN (54)
 
 enum
 {
     CMD_LOGIN   = 0,
     CMD_PING    = 1,
-    CMD_SERVER  = 2,
-    CMD_DATA    = 3,
-    CMD_SET     = 4,
+    CMD_SERVER,
+    CMD_DATA,
+    CMD_DYNAMIC,
+    CMD_SET
 };
 
 #pragma pack(push, 1)
@@ -83,6 +85,18 @@ typedef struct
     char data[AD_DATA_LEN];
 }__attribute__((__packed__)) MSG_DATA_REQ;
 typedef MSG_HEADER MSG_DATA_RSP;
+
+/*
+ * MSG_DATADYNAMIC_REQ message structure
+ */
+typedef struct
+{
+    MSG_HEADER header;
+    char imei[MAX_IMEI_LENGTH];
+    char data[AD_DATA_LEN];
+}__attribute__((__packed__)) MSG_DATADYNAMIC_REQ;
+typedef MSG_HEADER MSG_DATADYNAMIC_RSP;
+
 
 /*
  * MSG_SET_REQ message structure

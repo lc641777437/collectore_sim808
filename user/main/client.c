@@ -92,6 +92,12 @@ static int cmd_Data_rsp(const void* msg)
     return 0;
 }
 
+static int cmd_Dynamic_rsp(const void* msg)
+{
+    LOG_DEBUG("get data respond.");
+    return 0;
+}
+
 static int cmd_Set_Proc(const void* msg)
 {
     MSG_SET_REQ *req = (MSG_SET_REQ *)msg;
@@ -103,11 +109,12 @@ static int cmd_Set_Proc(const void* msg)
 
 static MC_MSG_PROC msgProcs[] =
 {
-    {CMD_LOGIN, cmd_Login_rsp},
-    {CMD_PING,  cmd_Ping_rsp},
-    {CMD_SERVER,cmd_Server_rsp},
-    {CMD_DATA,  cmd_Data_rsp},
-    {CMD_SET,   cmd_Set_Proc},
+    {CMD_LOGIN,     cmd_Login_rsp},
+    {CMD_PING,      cmd_Ping_rsp},
+    {CMD_SERVER,    cmd_Server_rsp},
+    {CMD_DATA,      cmd_Data_rsp},
+    {CMD_DYNAMIC,   cmd_Dynamic_rsp},
+    {CMD_SET,       cmd_Set_Proc},
 };
 
 int client_handleOnePkt(const void* m, int msgLen)
@@ -131,7 +138,6 @@ int client_handleOnePkt(const void* m, int msgLen)
             }
         }
     }
-
     LOG_ERROR("unknown message %d!", msg->cmd);
     return -1;
 }

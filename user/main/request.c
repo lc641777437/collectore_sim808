@@ -52,7 +52,7 @@ void cmd_Heartbeat(void)
     socket_sendDataDirectly(msg, msgLen);
 }
 
-void cmd_sendData(const unsigned char data[AD_DATA_LEN])
+void cmd_sendData(const unsigned char *data)
 {
     MSG_DATA_REQ *msg = NULL;
     u8 imei[MAX_IMEI_LENGTH + 1] = {0};
@@ -82,6 +82,26 @@ void cmd_sendData(const unsigned char data[AD_DATA_LEN])
     }
 
     memcpy(msg->data, data, AD_DATA_LEN);
+    socket_sendDataDirectly(msg, sizeof(MSG_DATA_REQ));
+    return;
+}
+
+void cmd_sendDataDynamic(const unsigned char *data)
+{
+    MSG_DATADYNAMIC_REQ *msg = NULL;
+    u8 imei[MAX_IMEI_LENGTH + 1] = {0};
+
+    msg = (MSG_DATADYNAMIC_REQ *)alloc_msg(CMD_DYNAMIC, sizeof(MSG_DATADYNAMIC_REQ));
+    if(!msg)
+    {
+        LOG_ERROR("malloc failed");
+        return;
+    }
+
+    eat_get_imei(imei, MAX_IMEI_LENGTH);
+    memcpy(msg->imei, imei, MAX_IMEI_LENGTH);
+    memcpy(msg->data, data, AD_DATADYNAMIC_LEN);
+
     socket_sendDataDirectly(msg, sizeof(MSG_DATA_REQ));
     return;
 }

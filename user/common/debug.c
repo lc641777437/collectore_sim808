@@ -30,21 +30,22 @@ typedef struct
 
 #define DBG_OUT(fmt, ...) eat_trace("[DEBUG]>"fmt, ##__VA_ARGS__)
 
-static int cmd_imei(const unsigned char* cmdString, unsigned short length);
-static int cmd_AT(const unsigned char* cmdString, unsigned short length);
-static int cmd_sim808(const unsigned char* cmdString, unsigned short length);
-static int cmd_reboot(const unsigned char* cmdString, unsigned short length);
-static int cmd_rtc(const unsigned char* cmdString, unsigned short length);
-
-static CMD_MAP cmd_map[MAX_CMD_NUMBER] =
+static int cmd_imei(const unsigned char* cmdString, unsigned short length)
 {
-    {"CT",          cmd_sim808},
-    {"imei",        cmd_imei},
-    {"reboot",      cmd_reboot},
-    {"rtc",         cmd_rtc}
-};
+    u8 imei[32] = {0};
+    eat_get_imei(imei, 31);
+    DBG_OUT("IMEI = %s", imei);
+    return 0;
+}
 
-static int cmd_sim808(const unsigned char* cmdString, unsigned short length)
+static int cmd_AT(const unsigned char* cmdString, unsigned short length)
+{
+    eat_modem_write(cmdString, length);
+    eat_modem_write("\n", 1);
+    return 0;
+}
+
+static int cmd_Data_Send(const unsigned char* cmdString, unsigned short length)
 {
     LOG_DEBUG("%d", length);
     if(length >= AD_DATA_LEN)
@@ -54,20 +55,18 @@ static int cmd_sim808(const unsigned char* cmdString, unsigned short length)
     return 0;
 }
 
-static int cmd_imei(const unsigned char* cmdString, unsigned short length)
+static int cmd_DataDynamic_Send(const unsigned char* cmdString, unsigned short length)
 {
-    u8 imei[32] = {0};
-    eat_get_imei(imei, 31);
-    DBG_OUT("IMEI = %s", imei);
-    return 0;
- }
-
-static int cmd_AT(const unsigned char* cmdString, unsigned short length)
-{
-    eat_modem_write(cmdString, length);
-    eat_modem_write("\n", 1);
+    LOG_DEBUG("%d", length);
+    if(length >= AD_DATADYNAMIC_LEN)
+    {
+        cmd_sendDataDynamic(cmdString);
+    }
     return 0;
 }
+
+
+
 
 static int cmd_reboot(const unsigned char* cmdString, unsigned short length)
 {
@@ -92,6 +91,15 @@ static int cmd_rtc(const unsigned char* cmdString, unsigned short length)
 
     return 0;
 }
+
+static CMD_MAP cmd_map[MAX_CMD_NUMBER] =
+{
+    {"CT",          cmd_Data_Send},
+    {"DT",          cmd_DataDynamic_Send},
+    {"imei",        cmd_imei},
+    {"reboot",      cmd_reboot},
+    {"rtc",         cmd_rtc}
+};
 
 int debug_proc(const unsigned char* cmdString, unsigned short length)
 {
