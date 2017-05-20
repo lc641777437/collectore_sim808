@@ -93,7 +93,7 @@ typedef struct
 {
     MSG_HEADER header;
     char imei[MAX_IMEI_LENGTH];
-    char data[AD_DATA_LEN];
+    char data[AD_DATADYNAMIC_LEN];
 }__attribute__((__packed__)) MSG_DATADYNAMIC_REQ;
 typedef MSG_HEADER MSG_DATADYNAMIC_RSP;
 

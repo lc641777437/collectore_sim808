@@ -10,6 +10,7 @@
 #include "protocol.h"
 int cmd_Login(void);
 void cmd_Heartbeat(void);
-void cmd_sendData(const unsigned char data[AD_DATA_LEN]);
+void cmd_sendData(const unsigned char *data);
+void cmd_sendDataDynamic(const unsigned char *data);
 
 #endif

@@ -102,7 +102,7 @@ void cmd_sendDataDynamic(const unsigned char *data)
     memcpy(msg->imei, imei, MAX_IMEI_LENGTH);
     memcpy(msg->data, data, AD_DATADYNAMIC_LEN);
 
-    socket_sendDataDirectly(msg, sizeof(MSG_DATA_REQ));
+    socket_sendDataDirectly(msg, sizeof(MSG_DATADYNAMIC_REQ));
     return;
 }
 
