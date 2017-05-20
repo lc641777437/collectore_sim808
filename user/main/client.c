@@ -102,6 +102,7 @@ static int cmd_Set_Proc(const void* msg)
 {
     MSG_SET_REQ *req = (MSG_SET_REQ *)msg;
     int length = ntohs(req->header.length);
+
     send_message_stm(req->data, length);
     return 0;
 }

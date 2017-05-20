@@ -10,11 +10,10 @@
 #define _PROTOCOL_H_
 
 #define START_FLAG (0xAA66)
-#define MAX_IMEI_LENGTH 15
+#define MAX_IMEI_LENGTH (15)
 
-#define MAX_SET_LEN (64)
-#define AD_DATA_LEN (148)
-#define AD_DATADYNAMIC_LEN (54)
+#define AD_DATA_LEN (146)
+#define AD_DATADYNAMIC_LEN (52)
 
 enum
 {

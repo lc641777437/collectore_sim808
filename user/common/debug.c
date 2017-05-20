@@ -35,7 +35,7 @@ static int cmd_Data_Send(const unsigned char* cmdString, unsigned short length)
     LOG_DEBUG("%d", length);
     if(length >= AD_DATA_LEN)
     {
-        cmd_sendData(cmdString);
+        cmd_sendData(cmdString + 2, AD_DATA_LEN);//"CT"
     }
     return 0;
 }
@@ -45,15 +45,23 @@ static int cmd_DataDynamic_Send(const unsigned char* cmdString, unsigned short l
     LOG_DEBUG("%d", length);
     if(length >= AD_DATADYNAMIC_LEN)
     {
-        cmd_sendDataDynamic(cmdString);
+        cmd_sendDataDynamic(cmdString + 2, AD_DATADYNAMIC_LEN);//"DT"
     }
     return 0;
 }
 
+static int cmd_SetResponse_Send(const unsigned char* cmdString, unsigned short length)
+{
+    LOG_DEBUG("%d", length);
+    cmd_setResponse(cmdString + 2, length - 2);//"ST"
+    return 0;
+}
+
+
 static int cmd_imei(const unsigned char* cmdString, unsigned short length)
 {
-    u8 imei[32] = {0};
-    eat_get_imei(imei, 31);
+    u8 imei[MAX_IMEI_LENGTH + 1] = {0};
+    eat_get_imei(imei, MAX_IMEI_LENGTH + 1);
     DBG_OUT("IMEI = %s", imei);
     return 0;
 }
@@ -86,6 +94,7 @@ static CMD_MAP cmd_map[MAX_CMD_NUMBER] =
 {
     {"CT",          cmd_Data_Send},
     {"DT",          cmd_DataDynamic_Send},
+    {"ST",          cmd_SetResponse_Send},
     {"imei",        cmd_imei},
     {"reboot",      cmd_reboot},
     {"rtc",         cmd_rtc}
