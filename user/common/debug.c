@@ -39,11 +39,9 @@ static int cmd_rtc(const unsigned char* cmdString, unsigned short length);
 static CMD_MAP cmd_map[MAX_CMD_NUMBER] =
 {
     {"CT",          cmd_sim808},
-    {"AT",          cmd_AT},
-    {"at",          cmd_AT},
-    {"reboot",      cmd_reboot},
-    {"rtc",         cmd_rtc},
     {"imei",        cmd_imei},
+    {"reboot",      cmd_reboot},
+    {"rtc",         cmd_rtc}
 };
 
 static int cmd_sim808(const unsigned char* cmdString, unsigned short length)
@@ -51,7 +49,7 @@ static int cmd_sim808(const unsigned char* cmdString, unsigned short length)
     LOG_DEBUG("%d", length);
     if(length >= MAX_INFO_LEN)
     {
-        cmd_sendInfo(cmdString);
+        cmd_sendData(cmdString);
     }
     return 0;
 }

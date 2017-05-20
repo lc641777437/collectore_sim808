@@ -71,5 +71,11 @@ int print(const char* fmt, ...)
 
     length = strlen(buf);
 
-    return eat_uart_write(EAT_UART_1,(const unsigned char *)buf, length);
+    return eat_uart_write(EAT_UART_1, (const unsigned char *)buf, length);
 }
+
+int send_message_stm(u8 *data, int length)
+{
+    return eat_uart_write(EAT_UART_1, (const unsigned char *)data, length);
+}
+

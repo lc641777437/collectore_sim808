@@ -15,6 +15,8 @@ int event_uart_ready_wr(const EatEvent_st* event);
 
 int print(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 
+int send_message_stm(u8 *data, int length);
+
 typedef int UART_WRITER(void);
 void uart_setWrite(UART_WRITER writer);
 

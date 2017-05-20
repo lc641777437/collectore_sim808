@@ -182,11 +182,9 @@ eat_bool setting_save(void)
     FS_HANDLE fh, rc;
     eat_bool ret = EAT_FALSE;
 
+    char *content = 0;
     cJSON *root = cJSON_CreateObject();
     cJSON *address = cJSON_CreateObject();
-
-    char *content = 0;
-
 
     cJSON_AddNumberToObject(address, TAG_ADDR_TYPE, setting.addr_type);
     if (setting.addr_type == ADDR_TYPE_DOMAIN)

@@ -32,32 +32,27 @@ typedef struct
 static int cmd_Login_rsp(const void* msg)
 {
     LOG_DEBUG("get login respond.");
-
     fsm_run(EVT_LOGINED);
-
     return 0;
 }
 
 static int cmd_Ping_rsp(const void* msg)
 {
     LOG_DEBUG("get ping respond.");
-
     return 0;
 }
 
-static int cmd_Info_rsp(const void* msg)
+static int cmd_Data_rsp(const void* msg)
 {
-    LOG_DEBUG("get ping respond.");
-
+    LOG_DEBUG("get data respond.");
     return 0;
 }
-
 
 static MC_MSG_PROC msgProcs[] =
 {
-    {CMD_LOGIN,cmd_Login_rsp},
-    {CMD_PING,cmd_Ping_rsp},
-    {CMD_INFO,cmd_Info_rsp},
+    {CMD_LOGIN, cmd_Login_rsp},
+    {CMD_PING,  cmd_Ping_rsp},
+    {CMD_DATA,  cmd_Data_rsp},
 };
 
 int client_handleOnePkt(const void* m, int msgLen)
@@ -88,8 +83,8 @@ int client_handleOnePkt(const void* m, int msgLen)
 
 int client_proc(const void *m, int msgLen)
 {
-    const MSG_HEADER *msg = (const MSG_HEADER *)m;
     size_t leftLen = 0;
+    const MSG_HEADER *msg = (const MSG_HEADER *)m;
 
     LOG_HEX(m, msgLen);
 
@@ -102,7 +97,8 @@ int client_proc(const void *m, int msgLen)
     leftLen = msgLen;
     while(leftLen >= ntohs(msg->length) + MSG_HEADER_LEN)
     {
-        if (ntohs(msg->signature) != START_FLAG)        {
+        if (ntohs(msg->signature) != START_FLAG)
+        {
             LOG_ERROR("receive message header signature error:%#x", (unsigned)ntohs(msg->signature));
             return -1;
         }

@@ -40,7 +40,7 @@ void* alloc_rspMsg(const MSG_HEADER* pMsg)
 
     MSG_LENGTH rsp_msg_length_map[] =
     {
-            {CMD_INFO,0},
+            {CMD_DATA,0},
             {CMD_PING,0}
     };
 
