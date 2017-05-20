@@ -12,15 +12,16 @@
 #define START_FLAG (0xAA66)
 #define MAX_IMEI_LENGTH 15
 
-#define MAX_INFO_LEN (148)
+#define MAX_SET_LEN (64)
+#define AD_DATA_LEN (148)
 
 enum
 {
-    CMD_LOGIN           = 0,
-    CMD_PING            = 1,
-    CMD_DATA            = 2,
-    CMD_SET_SAMPLE      = 3,
-    CMD_SET_SERVER      = 4,
+    CMD_LOGIN   = 0,
+    CMD_PING    = 1,
+    CMD_SERVER  = 2,
+    CMD_DATA    = 3,
+    CMD_SET     = 4,
 };
 
 #pragma pack(push, 1)
@@ -35,7 +36,6 @@ typedef struct
     short length;
 }__attribute__((__packed__)) MSG_HEADER;
 #define MSG_HEADER_LEN sizeof(MSG_HEADER)
-
 
 /*
  * Login message structure
@@ -58,9 +58,19 @@ typedef struct
 }__attribute__((__packed__)) MSG_PING_REQ;
 typedef MSG_HEADER MSG_PING_RSP;
 
+/*
+*server set_ip/domain message structure
+*this message has no response
+*/
+typedef struct
+{
+    MSG_HEADER header;
+    int port;
+    char server[];
+}__attribute__((__packed__)) MSG_SET_SERVER;
 
 /*
- * CMD_COLLECTOR_INFO message structure
+ * MSG_DATA_REQ message structure
  */
 typedef struct
 {
@@ -70,9 +80,28 @@ typedef struct
     int timestamp;
     float longitude;
     float latitude;
-    char info[MAX_INFO_LEN];
-}__attribute__((__packed__)) MSG_COLLECTOR_INFO;
-typedef MSG_HEADER MSG_COLLECTOR_INFO_RSP;
+    char data[AD_DATA_LEN];
+}__attribute__((__packed__)) MSG_DATA_REQ;
+typedef MSG_HEADER MSG_DATA_RSP;
+
+/*
+ * MSG_SET_REQ message structure
+ */
+typedef struct
+{
+    MSG_HEADER header;
+    char data[];
+}__attribute__((__packed__)) MSG_SET_REQ;
+
+/*
+ * MSG_SET_REQ message structure
+ */
+typedef struct
+{
+    MSG_HEADER header;
+    char data[];
+}__attribute__((__packed__)) MSG_SET_RSP;
+
 
 #pragma pack(pop)
 #endif /* _PROTOCOL_H_ */

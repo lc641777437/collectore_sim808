@@ -10,6 +10,6 @@
 #include "protocol.h"
 int cmd_Login(void);
 void cmd_Heartbeat(void);
-void cmd_sendData(const unsigned char data[MAX_INFO_LEN]);
+void cmd_sendData(const unsigned char data[AD_DATA_LEN]);
 
 #endif

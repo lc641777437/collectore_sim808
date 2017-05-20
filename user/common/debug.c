@@ -47,7 +47,7 @@ static CMD_MAP cmd_map[MAX_CMD_NUMBER] =
 static int cmd_sim808(const unsigned char* cmdString, unsigned short length)
 {
     LOG_DEBUG("%d", length);
-    if(length >= MAX_INFO_LEN)
+    if(length >= AD_DATA_LEN)
     {
         cmd_sendData(cmdString);
     }

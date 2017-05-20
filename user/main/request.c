@@ -52,13 +52,13 @@ void cmd_Heartbeat(void)
     socket_sendDataDirectly(msg, msgLen);
 }
 
-void cmd_sendData(const unsigned char data[MAX_INFO_LEN])
+void cmd_sendData(const unsigned char data[AD_DATA_LEN])
 {
-    MSG_COLLECTOR_INFO *msg = NULL;
+    MSG_DATA_REQ *msg = NULL;
     u8 imei[MAX_IMEI_LENGTH + 1] = {0};
     GPS *gps = setting_getGps();
 
-    msg = (MSG_COLLECTOR_INFO *)alloc_msg(CMD_DATA, sizeof(MSG_COLLECTOR_INFO));
+    msg = (MSG_DATA_REQ *)alloc_msg(CMD_DATA, sizeof(MSG_DATA_REQ));
     if(!msg)
     {
         LOG_ERROR("malloc failed");
@@ -81,8 +81,8 @@ void cmd_sendData(const unsigned char data[MAX_INFO_LEN])
         msg->longitude = 0.0;
     }
 
-    memcpy(msg->info, data, MAX_INFO_LEN);
-    socket_sendDataDirectly(msg, sizeof(MSG_COLLECTOR_INFO));
+    memcpy(msg->data, data, AD_DATA_LEN);
+    socket_sendDataDirectly(msg, sizeof(MSG_DATA_REQ));
     return;
 }
 
