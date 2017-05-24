@@ -102,16 +102,13 @@ static CMD_MAP cmd_map[MAX_CMD_NUMBER] =
 int debug_proc(const unsigned char* cmdString, unsigned short length)
 {
     int i = 0;
-    int rc = 0;
-
-    const unsigned char* cmd = string_trimLeft(cmdString);
-
     for (i = 0; i < MAX_CMD_NUMBER && cmd_map[i].action; i++)
     {
-        rc = strncmp((const char *)cmd, (const char *)cmd_map[i].cmd, strlen((const char *)cmd_map[i].cmd));
-        if (rc == 0)
+        char *pBuf = strstr((char *)cmdString, (const char *)cmd_map[i].cmd);
+        if (pBuf)
         {
-            return cmd_map[i].action(cmdString, length);
+            int len = pBuf - (char *)cmdString;
+            return cmd_map[i].action((const u8 *)pBuf, length - len);
         }
     }
 
