@@ -57,7 +57,6 @@ static int cmd_SetResponse_Send(const unsigned char* cmdString, unsigned short l
     return 0;
 }
 
-
 static int cmd_imei(const unsigned char* cmdString, unsigned short length)
 {
     u8 imei[MAX_IMEI_LENGTH + 1] = {0};

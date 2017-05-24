@@ -104,6 +104,7 @@ static int cmd_Set_Proc(const void* msg)
     int length = ntohs(req->header.length);
 
     send_message_stm(req->data, length);
+    send_message_stm("\r\n", 2);
     return 0;
 }
 
