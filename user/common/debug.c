@@ -120,14 +120,8 @@ int debug_proc(const unsigned char* cmdString, unsigned short length)
 int regist_cmd(const unsigned char* cmd, CMD_ACTION action)
 {
     int i = 0;
-
-    // get the count of cmd_map
-    while (i < MAX_CMD_NUMBER && cmd_map[i].action) i++;
-
-    if ( i >= MAX_CMD_NUMBER )
-    {
-        return -1;
-    }
+    while (i < MAX_CMD_NUMBER && cmd_map[i].action) i++;// get the count of cmd_map
+    if ( i >= MAX_CMD_NUMBER )return -1;
 
     strncpy((char *)cmd_map[i].cmd, (const char *)cmd, MAX_CMD_LENGTH);
     cmd_map[i].action = action;

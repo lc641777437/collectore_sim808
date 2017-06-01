@@ -152,7 +152,7 @@ eat_bool setting_restore(void)
         int count = sscanf(ipaddr, "%u.%u.%u.%u", ip, ip + 1, ip + 2, ip + 3);
 
         LOG_DEBUG("restore ip address");
-        if (count != 4) //4 means got four number of ip
+        if (count != 4) // 4 means got four number of ip
         {
             LOG_ERROR("restore ip address failed");
             eat_fs_Close(fh);

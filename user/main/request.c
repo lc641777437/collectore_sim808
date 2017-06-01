@@ -117,7 +117,7 @@ static void pc_set_server(const unsigned char *data)
         setting.port = (u16)port;
 
         socket_init();
-        eat_reset_module();
+        //eat_reset_module();
     }
     else
     {
@@ -143,6 +143,7 @@ static void pc_set_server(const unsigned char *data)
 }
 void cmd_setResponse(const unsigned char *data, int length)
 {
+    int len = 0;
     MSG_SET_RSP *msg = NULL;
 
     switch(data[0])
@@ -155,14 +156,15 @@ void cmd_setResponse(const unsigned char *data, int length)
             break;
 
         default:
-            msg = (MSG_SET_RSP *)alloc_msg(CMD_SET, sizeof(MSG_SET_RSP) + length);
+            len = sizeof(MSG_SET_RSP) + length;
+            msg = (MSG_SET_RSP *)alloc_msg(CMD_SET, len);
             if(!msg)
             {
                 LOG_ERROR("malloc failed");
                 return;
             }
             memcpy(msg->data, data, length);
-            socket_sendDataDirectly(msg, sizeof(MSG_DATADYNAMIC_REQ));
+            socket_sendDataDirectly(msg, len);
             break;
     }
     return;
