@@ -13,7 +13,7 @@
 #define MAX_IMEI_LENGTH (15)
 
 #define AD_DATA_LEN (146)
-#define AD_DATADYNAMIC_LEN (52)
+#define AD_DATADYNAMIC_LEN (50)
 
 enum
 {
