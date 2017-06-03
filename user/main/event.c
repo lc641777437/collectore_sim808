@@ -89,13 +89,13 @@ static void event_upgradeTime_proc(void)
         buf[0] = 0XA6;
         buf[1] = 0XA6;
         buf[2] = SIM808_SET_TIMESTAMP;
-        buf[3] = timestamp && 0X000000FF;
+        buf[3] = timestamp & 0X000000FF;
         timestamp >>= 8;
-        buf[4] = timestamp && 0X000000FF;
+        buf[4] = timestamp & 0X000000FF;
         timestamp >>= 8;
-        buf[5] = timestamp && 0X000000FF;
+        buf[5] = timestamp & 0X000000FF;
         timestamp >>= 8;
-        buf[6] = timestamp && 0X000000FF;
+        buf[6] = timestamp & 0X000000FF;
         send_message_stm(buf, 7);
         send_message_stm("\r\n", 2);
     }
