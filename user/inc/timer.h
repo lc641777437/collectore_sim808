@@ -12,5 +12,6 @@
 
 #define TIMER_GPS  	        EAT_TIMER_1
 #define TIMER_LOOP          EAT_TIMER_2
+#define TIMER_UPGRADETIME  	EAT_TIMER_3
 
 #endif /* USER_ELECTROMBILE_TIMER_H_ */

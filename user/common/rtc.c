@@ -23,6 +23,11 @@ eat_bool rtc_synced(void)
     return g_isRtcSync;
 }
 
+void rtc_setSyncFlag(eat_bool isRtcSync)
+{
+    g_isRtcSync = isRtcSync;
+}
+
 //the parameter is in the format: 20150327014838
 void rtc_update(long long time)
 {
@@ -53,13 +58,7 @@ void rtc_update(long long time)
                 rtc.year + YEAROFFSET, rtc.mon, rtc.day, rtc.hour, rtc.min, rtc.sec);
 
         eat_set_rtc(&rtc);
-        setting.main_gps_timer_period = 24 * 60 * 60 *1000; // one day
     }
-}
-
-void rtc_setSyncFlag(eat_bool isRtcSync)
-{
-    g_isRtcSync = isRtcSync;
 }
 
 time_t rtc_getTimestamp(void)

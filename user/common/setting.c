@@ -57,6 +57,7 @@ static void setting_initial(void)
     /* Timer configuration */
     setting.main_loop_timer_period = 5 * 1000;// 5s as normal
     setting.main_gps_timer_period = 5 * 1000;// 5s as initial, if OK, 1 hour as normal;
+    setting.main_upgrade_time_period = 60 * 1000;// 1min as initial;
     return;
 }
 
@@ -231,9 +232,12 @@ eat_bool setting_save(void)
     return ret;
 }
 
-void setting_saveGps(GPS gps)
+void setting_saveGps(GPS *gps)
 {
-    position = gps;
+    position.isGPS = gps->isGPS;
+    position.timestamp = gps->timestamp;
+    position.latitude = gps->latitude;
+    position.longitude = gps->longitude;
 }
 
 GPS *setting_getGps(void)

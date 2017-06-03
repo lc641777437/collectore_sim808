@@ -116,7 +116,8 @@ void app_main(void *data)
     startWatchdog();
 
     eat_gps_power_req(EAT_TRUE);
-    eat_timer_start(TIMER_GPS,setting.main_gps_timer_period);
+    eat_timer_start(TIMER_GPS, setting.main_gps_timer_period);
+    eat_timer_start(TIMER_UPGRADETIME, setting.main_upgrade_time_period);
 
     while(EAT_TRUE)
     {

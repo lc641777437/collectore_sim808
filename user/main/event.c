@@ -63,10 +63,7 @@ static void event_gps_proc(void)
     rc = sscanf((const char *)buf_gps, "%f,%f,%f,%lf,%*d,%d,%f,%f",
         &latitude, &longitude, &altitude, &iGpstime, &satellite, &speed, &course);
 
-    if(!rtc_synced())
-    {
-        rtc_update((long long)iGpstime);
-    }
+    rtc_update((long long)iGpstime);
 
     if(longitude > 0 && latitude > 0 && rc == 7)//get GPS
     {
@@ -74,11 +71,33 @@ static void event_gps_proc(void)
         gps.timestamp = rtc_getTimestamp();
         gps.latitude = latitude;
         gps.longitude = longitude;
-        setting_saveGps(gps);
+        setting_saveGps(&gps);
     }
     else
     {
         gps.isGPS = EAT_FALSE;
+    }
+}
+
+static void event_upgradeTime_proc(void)
+{
+    char buf[32] = {0};
+    GPS *position = setting_getGps();
+    if(position->isGPS)
+    {
+        u32 timestamp = rtc_getTimestamp();
+        buf[0] = 0XA6;
+        buf[1] = 0XA6;
+        buf[2] = SIM808_SET_TIMESTAMP;
+        buf[3] = timestamp && 0X000000FF;
+        timestamp >>= 8;
+        buf[4] = timestamp && 0X000000FF;
+        timestamp >>= 8;
+        buf[5] = timestamp && 0X000000FF;
+        timestamp >>= 8;
+        buf[6] = timestamp && 0X000000FF;
+        send_message_stm(buf, 7);
+        send_message_stm("\r\n", 2);
     }
 }
 
@@ -96,6 +115,11 @@ static int event_timer(const EatEvent_st* event)
             LOG_DEBUG("TIMER_GPS expire.");
             event_gps_proc();
             eat_timer_start(event->data.timer.timer_id, setting.main_gps_timer_period);
+            break;
+
+        case TIMER_UPGRADETIME:
+            event_upgradeTime_proc();
+            eat_timer_start(event->data.timer.timer_id, setting.main_upgrade_time_period);
             break;
 
         default:
@@ -160,3 +184,4 @@ int event_proc(EatEvent_st* event)
     }
     return -1;
 }
+

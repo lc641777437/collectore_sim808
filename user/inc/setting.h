@@ -34,6 +34,7 @@ typedef struct
     {
         u32 main_loop_timer_period;
         u32 main_gps_timer_period;
+        u32 main_upgrade_time_period;
     };
 }SETTING;
 
@@ -50,7 +51,7 @@ extern SETTING setting;
 eat_bool setting_restore(void);
 eat_bool setting_save(void);
 
-void setting_saveGps(GPS gps);
+void setting_saveGps(GPS *gps);
 GPS *setting_getGps(void);
 
 #endif /* USER_ELECTROMBILE_SETTING_H_ */

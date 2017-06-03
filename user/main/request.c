@@ -54,6 +54,7 @@ void cmd_Heartbeat(void)
 void cmd_sendData(const unsigned char *data, int length)
 {
     GPS *gps = setting_getGps();
+    u32 timestamp = rtc_getTimestamp();
     u8 imei[MAX_IMEI_LENGTH + 1] = {0};
     MSG_DATA_REQ *msg = (MSG_DATA_REQ *)alloc_msg(CMD_DATA, sizeof(MSG_DATA_REQ));
     if(!msg)
@@ -65,11 +66,12 @@ void cmd_sendData(const unsigned char *data, int length)
     msg->isGps = gps->isGPS;
     eat_get_imei(imei, MAX_IMEI_LENGTH + 1);
     memcpy(msg->imei, imei, MAX_IMEI_LENGTH);
-    msg->timestamp = htonl(rtc_getTimestamp());
     if(gps->isGPS) {
+        msg->timestamp = htonl(timestamp);
         msg->latitude = gps->latitude;
         msg->longitude = gps->longitude;
     }else {
+        msg->timestamp = 0;
         msg->latitude = 0.0;
         msg->longitude = 0.0;
     }
